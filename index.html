@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>डायरेक्ट वेबसाइट इंटीग्रेशन</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .current-url {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        #websiteUrl {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        #loadWebsite {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        #loadWebsite:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .website-viewer {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #2196F3;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+            font-weight: bold;
+        }
+
+        .error { 
+            background: #f44336; 
+            color: white;
+        }
+        .success { 
+            background: #4CAF50; 
+            color: white;
+        }
+        .info { 
+            background: #2196F3; 
+            color: white;
+        }
+
+        .predefined-sites {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .site-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .site-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            background: #FF9800;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .site-btn:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .website-viewer {
+                height: 400px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>डायरेक्ट वेबसाइट इंटीग्रेशन</h1>
+            <p class="subtitle">वेबसाइट को अपने टूल में सीधे embed करें</p>
+            <div class="current-url">
+                वर्तमान वेबसाइट: <span id="currentUrl">कोई वेबसाइट लोड नहीं है</span>
+            </div>
+        </header>
+
+        <div class="predefined-sites">
+            <h3>पूर्वनिर्धारित वेबसाइट्स</h3>
+            <div class="site-buttons">
+                <button class="site-btn" data-url="https://xhamster.desi/categories">Xhtmaster</button>
+                <button class="site-btn" data-url="https://www.youtube.com">Youtube</button>
+                <button class="site-btn" data-url="https://facebook.com">Facebook</button>
+                <button class="site-btn" data-url="https://instagram.com">Instagram</button>
+                <button class="site-btn" data-url="https://www.pornhub.org/categories">Pornhub</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <input type="url" id="websiteUrl" 
+                   placeholder="https://example.com">
+            <button id="loadWebsite">वेबसाइट लोड करें</button>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" id="refreshBtn">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                </svg>
+                रिफ्रेश
+            </button>
+            <button class="control-btn" id="backBtn">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                बैक
+            </button>
+            <button class="control-btn" id="forwardBtn">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                </svg>
+                फॉरवर्ड
+            </button>
+            <button class="control-btn" id="fullscreenBtn">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                फुलस्क्रीन
+            </button>
+        </div>
+
+        <div class="message" id="message"></div>
+
+        <iframe id="websiteViewer" class="website-viewer" 
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                allowfullscreen>
+        </iframe>
+
+        <footer>
+            <p>वेबसाइट इंटीग्रेशन टूल &copy; 2023 | किसी भी वेबसाइट को embed करें</p>
+        </footer>
+    </div>
+
+    <script>
+        // यहाँ आप अपनी वेबसाइट का लिंक डाल सकते हैं
+        const DEFAULT_WEBSITE_URL = "https://www.wikipedia.org";
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const websiteUrlInput = document.getElementById('websiteUrl');
+            const loadWebsiteBtn = document.getElementById('loadWebsite');
+            const websiteViewer = document.getElementById('websiteViewer');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const backBtn = document.getElementById('backBtn');
+            const forwardBtn = document.getElementById('forwardBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const messageDiv = document.getElementById('message');
+            const currentUrlSpan = document.getElementById('currentUrl');
+            const siteButtons = document.querySelectorAll('.site-btn');
+
+            // Default website load करें
+            websiteUrlInput.value = DEFAULT_WEBSITE_URL;
+            loadWebsite();
+
+            function showMessage(text, type) {
+                messageDiv.textContent = text;
+                messageDiv.className = 'message ' + type;
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }
+
+            function updateCurrentUrl(url) {
+                currentUrlSpan.textContent = url;
+            }
+
+            function loadWebsite() {
+                let url = websiteUrlInput.value.trim();
+                
+                if (!url) {
+                    showMessage('कृपया वेबसाइट URL डालें', 'error');
+                    return;
+                }
+
+                // Add https:// if not present
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                    websiteUrlInput.value = url;
+                }
+
+                try {
+                    websiteViewer.src = url;
+                    updateCurrentUrl(url);
+                    showMessage('वेबसाइट लोड हो रही है...', 'info');
+                    
+                    // Iframe load होने पर success message दिखाएं
+                    websiteViewer.onload = function() {
+                        showMessage('वेबसाइट सफलतापूर्वक लोड हो गई!', 'success');
+                    };
+                    
+                    websiteViewer.onerror = function() {
+                        showMessage('वेबसाइट लोड नहीं हो पाई। कृपया URL चेक करें।', 'error');
+                    };
+                    
+                } catch (error) {
+                    showMessage('वेबसाइट लोड नहीं हो पाई: ' + error.message, 'error');
+                }
+            }
+
+            // Predefined sites के buttons के लिए event listeners
+            siteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const url = this.getAttribute('data-url');
+                    websiteUrlInput.value = url;
+                    loadWebsite();
+                });
+            });
+
+            // Event listeners
+            loadWebsiteBtn.addEventListener('click', loadWebsite);
+            
+            refreshBtn.addEventListener('click', function() {
+                if (websiteViewer.src) {
+                    websiteViewer.src = websiteViewer.src;
+                    showMessage('वेबसाइट रिफ्रेश हो रही है...', 'info');
+                }
+            });
+
+            backBtn.addEventListener('click', function() {
+                try {
+                    websiteViewer.contentWindow.history.back();
+                } catch (error) {
+                    showMessage('Back नहीं किया जा सका', 'error');
+                }
+            });
+
+            forwardBtn.addEventListener('click', function() {
+                try {
+                    websiteViewer.contentWindow.history.forward();
+                } catch (error) {
+                    showMessage('Forward नहीं किया जा सका', 'error');
+                }
+            });
+
+            fullscreenBtn.addEventListener('click', function() {
+                if (websiteViewer.requestFullscreen) {
+                    websiteViewer.requestFullscreen();
+                } else if (websiteViewer.webkitRequestFullscreen) {
+                    websiteViewer.webkitRequestFullscreen();
+                } else if (websiteViewer.msRequestFullscreen) {
+                    websiteViewer.msRequestFullscreen();
+                }
+            });
+
+            // Allow pressing Enter to load website
+            websiteUrlInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loadWebsite();
+                }
+            });
+
+            // Show info message on page load
+            showMessage('वेबसाइट ऑटोमेटिक लोड हो गई! नया URL डालकर Enter दबाएं।', 'success');
+        });
+    </script>
+</body>
+</html>
