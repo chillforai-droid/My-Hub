@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: devstudio-backend
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ALLOWED_ORIGIN
+        value: https://www.texlyonline.in,https://texlyonline.in
+    plan: free
